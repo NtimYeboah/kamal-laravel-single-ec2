@@ -7,7 +7,7 @@ image: laravel-kamal
 # Deploy to these servers.
 servers:
   web:
-    - 34.207.95.21
+    - 18.208.169.205
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -18,10 +18,10 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: true
-  host: 34.207.95.21
+  ssl: false
+  host: 18.208.169.205
   # Proxy connects to your container on port 80 by default.
-  app_port: 8080
+  app_port: 80
 
 # Credentials for your image host.
 registry:
