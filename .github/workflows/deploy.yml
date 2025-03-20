@@ -1,0 +1,104 @@
+name: Deploy
+on:
+    workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: Install NPM
+        working-directory: iac
+        run: |
+          npm install
+
+      - name: Install CDK
+        run: |
+          npm install -g aws-cdk
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Provision EC2
+        working-directory: iac
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+        run: |
+          cp .env.example .env
+          sed -i "s/\bAWS_ACCOUNT_ID\b/${AWS_ACCOUNT_ID}/g" .env
+          sed -i "s/\bAWS_REGION\b/${AWS_REGION}/g" .env
+          sed -i "s/\bPRIVATE_SSH_KEY\b/${PRIVATE_SSH_KEY}/g" .env
+
+          cdk bootstrap
+          cdk deploy --require-approval=never
+
+      - name: Get Instance IP
+        id: get-instance-ip
+        run: |
+          # Get the IP from CloudFormation outputs and set it as an environment variable
+          INSTANCE_IP=$(aws cloudformation describe-stacks \
+          --stack-name DisoAiSaasIacStack \
+          --query 'Stacks[0].Outputs[?OutputKey==`InstancePublicIp`].OutputValue' \
+          --output text)
+          echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_OUTPUT
+  
+      - name: Add user to docker group
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+            host: ${{ steps.get-instance-ip.outputs.INSTANCE_IP }}
+            username: ubuntu
+            key: ${{ env.PRIVATE_SSH_KEY }}
+            script: |
+              sudo usermod -a -G docker ubuntu
+              exit
+  
+      - name: Set up SSH to be used by Kamal
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ env.PRIVATE_SSH_KEY }}
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+  
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.1
+          bundler-cache: true
+    
+      - run: gem install kamal
+
+      - name: Deploy application to EC2 instance
+        id: deploy-app
+        env:
+          INSTANCE_IP: ${{ steps.get-instance-ip.outputs.INSTANCE_IP }}
+          REGISTRY: ${{ secrets.REGISTRY }}
+          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
+          KAMAL_REGISTRY_PASSWORD: ${{ steps.login-ecr.outputs.docker_password_651706758333_dkr_ecr_us_east_1_amazonaws_com }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
+        run: |
+          sed -i "s/\bINSTANCE_IP\b/${INSTANCE_IP}/g" config/deploy.yml
+          sed -i "s/\bREGISTRY\b/${REGISTRY}/g" config/deploy.yml
+          sed -i "s/\bECR_REPOSITORY\b/${ECR_REPOSITORY}/g" config/deploy.yml
+          
+          kamal setup
+          kamal deploy
