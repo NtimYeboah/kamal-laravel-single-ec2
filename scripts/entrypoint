@@ -1,0 +1,69 @@
+#!/bin/bash
+
+main() {
+    prepare_file_permissions
+    run_npm_build
+    prepare_storage
+    prepare_env
+    run_migrations
+    optimize_app
+    run_services
+    run_server "$@"
+}
+
+prepare_file_permissions() {
+    chmod a+x ./artisan
+}
+
+run_npm_build() {
+    echo "Installing NPM dependencies"
+    if [ -f "package.json" ]; then
+        echo "Running NPM clean install"
+        npm ci
+
+        echo "Running NPM build"
+        npm run build
+    else
+        echo "No package.json found, skipping NPM build"
+    fi
+}
+
+prepare_storage() {
+    # Ensure the symlink exists
+    php artisan storage:link
+}
+
+optimize_app() {
+    php artisan optimize:clear
+    php artisan optimize
+}
+
+prepare_env() {
+    echo "Creating .env file"
+    cp .env.prod.example .env
+    chmod 777 .env
+
+    echo "Setting application key"
+    php artisan key:generate
+}
+
+run_migrations() {
+    php artisan migrate --force
+}
+
+optimize_app() {
+    php artisan optimize:clear
+    php artisan optimize
+}
+
+run_services()
+{
+    service nginx restart
+    /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+}
+
+run_server() {
+    exec /usr/local/bin/docker-php-entrypoint "$@"
+}
+
+main "$@"
