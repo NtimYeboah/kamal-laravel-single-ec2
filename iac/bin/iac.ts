@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
 import { IacStack } from '../lib/iac-stack';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = new cdk.App();
 new IacStack(app, 'IacStack', {
@@ -10,7 +15,7 @@ new IacStack(app, 'IacStack', {
 
   /* Uncomment the next line to specialize this stack for the AWS Account
    * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  env: { account: process.env.AWS_ACCOUNT_ID, region: process.env.AWS_REGION },
 
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
