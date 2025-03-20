@@ -39,9 +39,10 @@ jobs:
         run: |
           cp .env.example .env
           cat .env
-          sed -i "s/\b$AWS_ACCOUNT_ID\b/${AWS_ACCOUNT_ID}/g" .env
-          sed -i "s/\b$AWS_REGION\b/${AWS_REGION}/g" .env
-          sed -i "s/\b$PRIVATE_SSH_KEY\b/${PRIVATE_SSH_KEY}/g" .env
+          sed -i "s/$AWS_ACCOUNT_ID/${AWS_ACCOUNT_ID}/g" .env
+          sed -i "s/$AWS_REGION/${AWS_REGION}/g" .env
+          sed -i "s/$PRIVATE_SSH_KEY/${PRIVATE_SSH_KEY}/g" .env
+          cat .env
 
           cdk bootstrap
           cdk deploy --require-approval=never
