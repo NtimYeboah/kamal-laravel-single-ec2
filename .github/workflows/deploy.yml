@@ -40,10 +40,10 @@ jobs:
           cp .env.example .env
           cat .env
 
-          sed -i 's/PRIVATE_SSH_KEY=.*/PRIVATE_SSH_KEY=${AWS_ACCOUNT_ID}/g' .env
-          sed -i 's/AWS_REGION=.*/AWS_REGION=${AWS_REGION}/g' .env
-          sed -i 's/AWS_ACCOUNT_ID=.*/AWS_ACCOUNT_ID=${PRIVATE_SSH_KEY}/g' .env
-          
+          sed -i "s/PRIVATE_SSH_KEY=.*/PRIVATE_SSH_KEY=\"$PRIVATE_SSH_KEY\"/g" .env
+          sed -i "s/AWS_REGION=.*/AWS_REGION=\"$AWS_REGION\"/g" .env
+          sed -i "s/AWS_ACCOUNT_ID=.*/AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID/g" .env
+
           cat .env
 
           cdk bootstrap
