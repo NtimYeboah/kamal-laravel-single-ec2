@@ -43,7 +43,6 @@ jobs:
           echo >> .env
           echo PUBLIC_SSH_KEY=$(echo ${PUBLIC_SSH_KEY}) >> .env
        
-          cat .env
           cdk bootstrap
           cdk deploy --require-approval=never
 
@@ -56,16 +55,6 @@ jobs:
           --query 'Stacks[0].Outputs[?OutputKey==`InstancePublicIp`].OutputValue' \
           --output text)
           echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_OUTPUT
-  
-      - name: Add user to docker group
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-            host: ${{ steps.get-instance-ip.outputs.INSTANCE_IP }}
-            username: ubuntu
-            key: ${{ secrets.PRIVATE_SSH_KEY }}
-            script: |
-              sudo usermod -a -G docker ubuntu
-              exit
   
       - name: Set up SSH to be used by Kamal
         uses: webfactory/ssh-agent@v0.9.0
@@ -101,6 +90,8 @@ jobs:
           sed -i "s/\bINSTANCE_IP\b/${INSTANCE_IP}/g" config/deploy.yml
           sed -i "s/\bREGISTRY\b/${REGISTRY}/g" config/deploy.yml
           sed -i "s/\bECR_REPOSITORY\b/${ECR_REPOSITORY}/g" config/deploy.yml
+
+          cat config/deploy.yml
           
           kamal setup
           kamal deploy
