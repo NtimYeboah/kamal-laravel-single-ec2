@@ -35,13 +35,13 @@ jobs:
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
         run: |
           echo AWS_REGION=$(echo ${AWS_REGION}) >> .env
           echo >> .env
           echo AWS_ACCOUNT_ID=$(echo ${AWS_ACCOUNT_ID}) >> .env
           echo >> .env
-          echo PRIVATE_SSH_KEY=$(echo ${PRIVATE_SSH_KEY}) >> .env
+          echo PUBLIC_SSH_KEY=$(echo ${PUBLIC_SSH_KEY}) >> .env
        
           cat .env
           cdk bootstrap
