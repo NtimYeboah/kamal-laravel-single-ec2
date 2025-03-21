@@ -24,6 +24,7 @@ export class IacStack extends cdk.Stack {
       'sudo apt upgrade -y',
       'sudo apt install -y docker.io curl git',
       'sudo usermod -a -G docker ubuntu',
+      'exit'
     );
 
     // Create an IAM role for the EC2 instance
