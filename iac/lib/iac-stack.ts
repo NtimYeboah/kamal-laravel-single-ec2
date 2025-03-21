@@ -14,7 +14,7 @@ export class IacStack extends cdk.Stack {
 
     // Replace with your SSH key name
     const keyPair = new ec2.KeyPair(this, 'KeyPair', {
-      publicKeyMaterial: process.env.PRIVATE_SSH_KEY,
+      publicKeyMaterial: process.env.PUBLIC_SSH_KEY,
     })
 
     // User provided user data

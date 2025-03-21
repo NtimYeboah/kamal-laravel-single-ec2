@@ -33,10 +33,11 @@ jobs:
       - name: Destroy infrastructure
         working-directory: iac
         env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
-          cp .env.example .env
-          sed -i "s/\bAWS_ACCOUNT_ID\b/${AWS_ACCOUNT_ID}/g" .env
-          sed -i "s/\bAWS_REGION\b/${AWS_REGION}/g" .env
+          echo AWS_REGION=$(echo ${AWS_REGION}) >> .env
+          echo >> .env
+          echo AWS_ACCOUNT_ID=$(echo ${AWS_ACCOUNT_ID}) >> .env
 
           cdk destroy --all --force
