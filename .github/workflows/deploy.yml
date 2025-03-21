@@ -52,7 +52,7 @@ jobs:
         run: |
           # Get the IP from CloudFormation outputs and set it as an environment variable
           INSTANCE_IP=$(aws cloudformation describe-stacks \
-          --stack-name DisoAiSaasIacStack \
+          --stack-name IacStack \
           --query 'Stacks[0].Outputs[?OutputKey==`InstancePublicIp`].OutputValue' \
           --output text)
           echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_OUTPUT
@@ -62,7 +62,7 @@ jobs:
         with:
             host: ${{ steps.get-instance-ip.outputs.INSTANCE_IP }}
             username: ubuntu
-            key: ${{ env.PRIVATE_SSH_KEY }}
+            key: ${{ secrets.PRIVATE_SSH_KEY }}
             script: |
               sudo usermod -a -G docker ubuntu
               exit
@@ -70,7 +70,7 @@ jobs:
       - name: Set up SSH to be used by Kamal
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ env.PRIVATE_SSH_KEY }}
+          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
 
       - name: Login to AWS ECR
         id: login-ecr
