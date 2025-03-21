@@ -38,6 +38,11 @@ jobs:
           PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
         run: |
           echo AWS_REGION=$(echo ${AWS_REGION}) >> .env
+          echo >> .env
+          echo AWS_ACCOUNT_ID=$(echo ${AWS_ACCOUNT_ID}) >> .env
+          echo >> .env
+          echo PRIVATE_SSH_KEY=$(echo ${PRIVATE_SSH_KEY}) >> .env
+       
           cat .env
           cdk bootstrap
           cdk deploy --require-approval=never
