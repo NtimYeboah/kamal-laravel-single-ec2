@@ -1,4 +1,4 @@
-name: Decommission infrastructure
+name: Decommission
 on:
     workflow_dispatch:
 

@@ -91,7 +91,5 @@ jobs:
           sed -i "s/\bREGISTRY\b/${REGISTRY}/g" config/deploy.yml
           sed -i "s/\bECR_REPOSITORY\b/${ECR_REPOSITORY}/g" config/deploy.yml
 
-          cat config/deploy.yml
-          
           kamal setup
           kamal deploy
