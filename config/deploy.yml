@@ -2,12 +2,12 @@
 service: Laravel-kamal
 
 # Name of the container image.
-image: ECR_REPOSITORY
+image: laravel-kamal
 
 # Deploy to these servers.
 servers:
   web:
-    - INSTANCE_IP
+    - 34.229.126.231
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -19,14 +19,14 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: false
-  host: INSTANCE_IP
+  host: 34.229.126.231
   # Proxy connects to your container on port 80 by default.
   app_port: 80
 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
-  server: REGISTRY
+  server: 651706758333.dkr.ecr.us-east-1.amazonaws.com
   username: AWS
   # Always use an access token rather than real password (pulled from .kamal/secrets).
   password:
@@ -62,7 +62,7 @@ ssh:
 logging:
   driver: awslogs
   options:
-    awslogs-group: ec2-laravel-kamal
+    awslogs-group: ec2/laravel/kamal
     awslogs-create-group: true
 
 # Use a persistent storage volume.

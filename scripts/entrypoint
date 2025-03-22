@@ -42,6 +42,7 @@ prepare_env() {
     echo "Creating .env file"
     cp .env.prod.example .env
     chmod 777 .env
+    cat .env
 
     echo "Setting application key"
     php artisan key:generate

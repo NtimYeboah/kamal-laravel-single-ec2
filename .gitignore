@@ -22,3 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 *.pem
+config/deploy.prod.yml
+config/deploy.local.yml
