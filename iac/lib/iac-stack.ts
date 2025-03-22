@@ -36,7 +36,7 @@ export class IacStack extends cdk.Stack {
     instanceRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: ['*'],
+        resources: ["*"],
       })
     );
 
