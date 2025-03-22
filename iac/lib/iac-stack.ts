@@ -36,7 +36,22 @@ export class IacStack extends cdk.Stack {
     instanceRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: ["*"],
+        resources: ['*'],
+      })
+    );
+
+    // Add CloudWatch logging policy
+    instanceRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'logs:PutLogEvents',
+          'logs:PutRetentionPolicy',
+          'logs:DescribeLogStreams',
+          'logs:DescribeLogGroups',
+          'logs:CreateLogStream',
+          'logs:CreateLogGroup',
+        ],
+        resources: ['*']
       })
     );
 

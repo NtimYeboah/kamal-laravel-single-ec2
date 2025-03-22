@@ -59,6 +59,12 @@ builder:
 ssh:
   user: ubuntu
 
+logging:
+  driver: awslogs
+  options:
+    awslogs-group: ec2-laravel-kamal
+    awslogs-stream-prefix: kamal
+
 # Use a persistent storage volume.
 #
 # volumes:
