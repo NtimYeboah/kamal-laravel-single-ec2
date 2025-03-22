@@ -63,7 +63,7 @@ logging:
   driver: awslogs
   options:
     awslogs-group: ec2-laravel-kamal
-    awslogs-stream-prefix: kamal
+    awslogs-create-group: true
 
 # Use a persistent storage volume.
 #
